@@ -1,0 +1,31 @@
+services:
+  express-server:
+    build:
+      context: ./express-server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${NODE_DATABASE_URL}
+    depends_on:
+      - postgresdb
+      - gin-server
+
+  gin-server:
+    build:
+      context: ./gin-server
+    environment:
+      - DATABASE_URL=${GO_DATABASE_URL}
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
