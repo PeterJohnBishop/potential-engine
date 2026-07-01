@@ -1,5 +1,9 @@
 import express from 'express';
 import pg from 'pg';
+import { createHandler } from 'graphql-http/lib/use/express';
+import { ruruHTML } from 'ruru/server';
+import { schema } from './graphql/schema.js'
+import { root } from './graphql/resolvers.js'
 
 const { Pool } = pg;
 const app = express();
@@ -7,6 +11,19 @@ const PORT = 3000;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+});
+
+app.post(
+  '/graphql',
+  createHandler({
+    schema: schema,
+    rootValue: root
+  })
+)
+
+app.get('/graphql', (_req, res) => {
+  res.type('html');
+  res.end(ruruHTML({ endpoint: '/graphql' }));
 });
 
 app.get('/', async (req, res) => {
