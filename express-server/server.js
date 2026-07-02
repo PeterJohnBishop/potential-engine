@@ -17,7 +17,10 @@ app.post(
   '/graphql',
   createHandler({
     schema: schema,
-    rootValue: root
+    rootValue: root,
+    context: async (req) => ({
+      db: pool,
+    }),
   })
 )
 
